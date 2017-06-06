@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/responsee.css">
+<link rel="stylesheet" href="css/template-style.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+
+<!-- <script type="text/javascript" src="js/jquery-1.8.3.min.js"></script> -->
+<!-- <script type="text/javascript" src="js/jquery-ui.min.js"></script> -->
+<script type="text/javascript" src="js/modernizr.js"></script>
+<script type="text/javascript" src="js/responsee.js"></script> 
+<script type="text/javascript" src="js/dropzone.js"></script>
+<!-- <link rel="stylesheet" href="http://dodsoftware.com/sotests/fancy/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+<script type="text/javascript" src="http://dodsoftware.com/sotests/fancy/jquery.fancybox-1.3.4.js"></script>
+<script type="text/javascript" src="http://dodsoftware.com/sotests/fancy/jquery.easing-1.3.pack.js"></script>
+--><script type="text/javascript" src="http://dodsoftware.com/sotests/fancy/jquery.mousewheel-3.0.4.pack.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<!-- <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script> -->
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>  
+<script src="js/app.js"></script> 
+
+
+<style>
+
+      /* Always set the map height explicitly to define the size of the div
+      * element that contains the map. */
+      div.desc{
+        background-color: #000;
+        bottom: 0;
+        color: #fff;
+        left: 0;
+        opacity: 0.5;
+        position: absolute;
+        width: 100%;
+      }
+
+      .fix{
+        width: 100%;
+        padding: 0px;
+      }
+
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #description {
+        font-family: Roboto;
+        font-size: 15px;
+        font-weight: 300;
+      }
+
+      #infowindow-content .title {
+        font-weight: bold;
+      }
+
+      #infowindow-content {
+        display: none;
+      }
+
+      #map #infowindow-content {
+        display: inline;
+      }
+
+      .pac-card {
+        margin: 0 0 0 0;
+        left:0px;
+        top :0px;
+        border-radius: 2px 0 0 2px;
+        position:fixed;
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        outline: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        background-color: #fff;
+        font-family: Roboto;
+      }
+
+      #pac-container {
+        padding-bottom: 12px;
+        z-index: 20;
+        margin-right: 12px;
+      }
+
+      .pac-controls {
+        display: inline-block;
+        padding: 5px 11px;
+      }
+
+      .pac-controls label {
+        font-family: Roboto;
+        font-size: 13px;
+        font-weight: 300;
+      }
+
+      #pac-input {
+        background-color: #fff;
+        /*font-family: Roboto;
+        */font-family: 'mfg';
+        font-size: 1em;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 13px;
+        color: black;
+        /*font-weight: 350;
+        */margin-left: 0px;
+        padding: 0 11px 0 13px;
+        text-overflow: ellipsis;
+        width: 400px;
+      }
+
+      #pac-input:focus {
+        border-color: #4d90fe;
+      }
+      .modal{
+        z-index: 20;  
+        position: absolute;
+        top: 100px; 
+      }
+      .modal-backdrop{
+        z-index: 10;        
+      }​
+      .displayClass{
+      max-height: 300px;
+      overflow-y: auto;
+  }
+      #title {
+        color: #fff;
+        background-color: #4d90fe;
+        font-size: 25px;
+        font-weight: 500;
+        padding: 6px 12px;
+      }
+      #upload
+      {
+        position: fixed;
+        width: 25%;
+        /*height: 200px;*/
+        right: 50%;
+        top: 0%;
+        /*margin-left: -300px; /*half the width*/*/
+      }
+
+      #map
+      {
+        position: fixed;
+        width: 600px;
+        height: 200px;
+        left: 5%;
+        top: 10%;
+        margin-left: -300px; /*half the width*/
+      }
+    </style>
+
+    <meta charset="utf-8" />
+    <title>EthPhoto</title>
+    <style>
+      html, body, #map {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      div#footer {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 18px;
+        margin: 0;
+        padding: 6px;
+        z-index: 2;
+        background: WHITE;
+      }
+
+      div#map{
+       position:   fixed;
+       left:0;
+
+     }
+   </style> 
+   <!-- <script src="https://maps.googleapis.com/maps/api/js?sensor=false&key=AIzaSyBz8l2WRwm9aie6Kplk6JM9EiChGI_VTOc&libraries=places&language=en"></script> -->
+ </head>
+ <body>
+
+
+
+
+  <header>
+   <nav>
+    <div class="line"  style="background: none repeat scroll 0 0 rgba(0, 30, 34, 1); padding-top: 10px;">
+     <div class="top-nav">  
+      <div class="top-nav s-12 l-5">
+       <ul class="right top-ul chevron">
+        <li><a><input id="pac-input" type="text" placeholder="SEARCH BY LOCATION"></a>
+        </li>
+      </ul>
+    </div>
+    <div class="top-nav s-12 l-2"  style="background: none repeat scroll 0 0 rgba(0, 30, 34, 0.85); padding-left: 50px; vertical-align: middle;">
+     <!-- <li class="logo hide-s hide-m"> -->
+     <ul class="top-ul chevron">
+      <li id="myBtn" data-target="#myModal">
+       <a>Add Photo</a>  
+     </li>
+   </ul>
+ </div>
+ <div class="top-nav s-12 l-5" style="vertical-align: middle;">
+   <ul class="top-ul chevron">
+    <li>
+     <a>Search by Topic</a>         
+     <ul id="topicListDiv" style="width: 30%;">
+      <li value="none"></li>
+    </ul>
+  </li>
+</ul> 
+</div>
+</div>
+</div>
+</nav>
+</header>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Upload Image</h4>
+
+      </div>
+      <div class="modal-body" id="testid">
+        <input type="file" accept="image/*" name="addPic" id="addPic" style="border-radius: 5px;" />
+        <!-- <input type="text" id="addPic"> -->
+        <br>
+        <input id="addPicLoc" type="text" placeholder="Add location" style="margin-right: 10px;" />
+        <input id="addPicTopic" type="text" placeholder="Topic"/>
+
+      </div>
+      <div class="modal-footer">
+       <button type="button" onclick="clearVal()" class="btn btn-default" data-dismiss="modal">Close</button>
+       <button id = "btn_" type="button" class="btn btn-primary" onclick="UploadPicInfo()">Add 
+       </button>
+     </div>
+   </div>
+ </div>
+</div>
+
+<!-- <head>
+  <script type="text/javascript">
+    function insert(){
+      var src = document.getElementById("gamediv");
+      var img = document.createElement("img");
+      img.src = "img/eqp/"+this.apparel+"/"+this.facing+"_idle.png";
+      src.appendChild(img);
+    }
+  </script>
+</head>
+ -->
+<div class="modal fade" id="myD" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" style="overflow-y: initial; max-height:85%;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Browse Images</h4>
+      </div>
+      <div id="getPicture" class="modal-body displayClass">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="map"></div>
+
+<div id="infowindow-content">
+  <img src="" width="16" height="16" id="place-icon">
+  <span id="place-name"  class="title"></span><br>
+  <span id="place-address"></span>
+</div>
+
+<!--nvisible button in order to show the display of images.-->
+<button id="myData" class="btn btn-primary btn-lg"  type="button" data-target="#myD" style="display: none;">Company 1</button>
+
+<script type="text/javascript">
+
+        function initMap() {
+                //Google maps API initialisation
+                var element = document.getElementById("map");
+
+                var map = new google.maps.Map(element, {
+                  center: new google.maps.LatLng(57, 21),
+                  zoom: 3,
+                  mapTypeId: "OSM",
+                  mapTypeControl: false,
+                  streetViewControl: false
+                });
+
+            //Define OSM map type pointing at the OpenStreetMap tile server
+            map.mapTypes.set("OSM", new google.maps.ImageMapType({
+              getTileUrl: function(coord, zoom) {
+                    // "Wrap" x (logitude) at 180th meridian properly
+                    // NB: Don't touch coord.x because coord param is by reference, and changing its x property breakes something in Google's lib 
+                    var tilesPerGlobe = 1 << zoom;
+                    var x = coord.x % tilesPerGlobe;
+                    if (x < 0) {
+                      x = tilesPerGlobe+x;
+                    }
+                    // Wrap y (latitude) in a like manner if you want to enable vertical infinite scroll
+
+                    return "http://tile.openstreetmap.org/" + zoom + "/" + x + "/" + coord.y + ".png";
+                  },
+                  tileSize: new google.maps.Size(256, 256),
+                  name: "OpenStreetMap",
+                  maxZoom: 18
+                }));
+            var map = new google.maps.Map(document.getElementById('map'), {
+              center: {lat: 0, lng: 0},
+              zoom: 3
+            });
+            var card = document.getElementById('pac-card');
+            var input = document.getElementById('pac-input');
+            var types = document.getElementById('type-selector');
+            var strictBounds = document.getElementById('strict-bounds-selector');
+
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
+
+            var autocomplete = new google.maps.places.Autocomplete(input);
+                // Bind the map's bounds (viewport) property to the autocomplete object,
+                // so that the autocomplete requests use the current map bounds for the
+                // bounds option in the request.
+                autocomplete.bindTo('bounds', map);
+
+                var addpicinput = document.getElementById('addPicLoc');
+                var picautocomplete = new google.maps.places.Autocomplete(addpicinput);
+          //      picautocomplete.bindTo('bounds', map);
+
+
+
+          map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
+          var infowindow = new google.maps.InfoWindow();
+          var infowindowContent = document.getElementById('infowindow-content');
+          infowindow.setContent(infowindowContent);
+          var marker = new google.maps.Marker({
+            map: map,
+            anchorPoint: new google.maps.Point(0, -29)
+          });
+
+
+
+
+          autocomplete.addListener('place_changed', function() {
+            infowindow.close();
+            marker.setVisible(false);
+            var place = autocomplete.getPlace();
+
+            console.log(place);
+            if (!place.geometry) {
+                    // User entered the name of a Place that was not suggested and
+                    // pressed the Enter key, or the Place Details request failed.
+                    window.alert("No details available for input: '" + place.name + "'");
+                    return;
+                  }
+
+                  // If the place has a geometry, then present it on a map.
+                  if (place.geometry.viewport) {
+                    map.fitBounds(place.geometry.viewport);
+                  } else {
+                    map.setCenter(place.geometry.location);
+                    map.setZoom(17);  // Why 17? Because it looks good.
+                  }
+                  
+                  marker.setPosition(place.geometry.location);
+
+                  console.log("loc"+place.geometry.location);
+                  marker.setVisible(true);
+                  //here marker is the indication that appears on the screen when 
+                  //a user searches for a location.
+                  
+                  
+                  console.log(place.formatted_address);
+                  
+                  marker.addListener('click', function() {
+                    DisplayPicture(place.formatted_address,"all");
+                    document.getElementById('myData').click();        
+                  });
+
+                  var address = '';
+                  if (place.address_components) {
+                    address = [
+                    (place.address_components[0] && place.address_components[0].short_name || ''),
+                    (place.address_components[1] && place.address_components[1].short_name || ''),
+                    (place.address_components[2] && place.address_components[2].short_name || '')
+                    ].join(' ');
+                  }
+
+                  infowindowContent.children['place-icon'].src = place.icon;
+                  infowindowContent.children['place-name'].textContent = place.name;
+                  infowindowContent.children['place-address'].textContent = address;
+                  infowindow.open(map, marker);
+                });
+
+          generateTopicList();
+          var el = document.getElementsByClassName('putMarkers');
+          console.log(el);
+          console.log(el.length);
+          for (var i=0;i<el.length; i++) {
+
+            el[i].addEventListener('click',function() {
+
+                         ////// get the locations into this
+                        // var topic_selected=el[i].nodeValue; //has the topic name
+                        var topic_selected = "map";
+                        console.log(topic_selected);
+                        var len = 0;
+                        var isall = 0;
+                        if(topic_selected.toUpperCase()=="ALL")
+                        {
+                          isall = 1;
+                          len = PhotoShare.getAllOnStart();
+                        }
+                        else
+                          len = PhotoShare.getPhotosFromTopic(topic_selected);
+                        // var retArr = new Array(len);
+                        // for(var i=0;i<len;i++)
+                        // {
+                        //   retArr[i] = new Array(4);
+                        //   retArr[i][0] = PhotoShare.accessRetArray(i);
+                        //   var [loc,top, isOwner] = PhotoShare.getPhotoInfo(photoHash);
+                        //   retArr[i][1] = top;
+                        //   retArr[i][2] = loc;
+                        //   retArr[i][3] = isOwner;
+                        // }
+                        var retArr = new Array(1);
+                        for(var i=0;i<1;i++)
+                        {
+                          retArr[i] = new Array(4);
+                          retArr[i][0] = "hash";
+                          // var [loc,top, isOwner] = PhotoShare.getPhotoInfo(retArr[i][0]);
+                          retArr[i][1] = "play  ";
+                          retArr[i][2] = "Calcutta, West Bengal, India";
+                          retArr[i][3] = 1;
+                        }
+                        var infowindow = new google.maps.InfoWindow;
+
+                        var markeri, i;
+                        var geocoder = new google.maps.Geocoder();
+                        for (i = 0; i < retArr.length; i++) { 
+                          geocoder.geocode( { 'address': retArr[i][2]}, function(results, status) {
+                            var latitude = results[0].geometry.location.lat();
+                            var longitude = results[0].geometry.location.lng();
+                            console.log(latitude + "  " + longitude);
+                            markeri = new google.maps.Marker({
+                              position: new google.maps.LatLng(latitude, longitude),
+                              map: map
+                            });
+                          });
+
+                          google.maps.event.addListener(markeri, 'click', (function(markeri, i) {
+                            return function() {
+                              infowindow.setContent(retArr[i][1]);
+                              infowindow.open(map, markeri);
+                              DisplayPicture(retArr[i][2],retArr[i][1]);
+                              document.getElementById('myData').click();
+                            }
+                          })(markeri, i));
+                        }
+
+
+                     },false);
+          }
+        }
+      </script>
+      <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800&amp;subset=latin,latin-ext' rel='stylesheet' type='text/css'> -->
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBz8l2WRwm9aie6Kplk6JM9EiChGI_VTOc&libraries=places&callback=initMap" async defer></script>
+
+      <script>
+              // // Generate markers for topic search
+              // function getFromTopic(topic_selected)
+              // {
+              //   var len = 0;
+              //   var isall = 0;
+              //   if(topic_selected.toUpperCase()=="ALL")
+              //   {
+              //     isall = 1;
+              //     len = PhotoShare.getPhotosFromTopic();
+              //   }
+              //   len = PhotoShare.getPhotosFromTopic(topic_selected);
+              //   if(isall==1)
+              //   {
+              //     PhotoShare.getAllOnStart();
+              //   }
+              //   var retArr = new Array(len);
+              //   for(var i=0;i<len;i++)
+              //   {
+              //     retArr[i] = new Array(5);
+              //     retArr[i][0] = PhotoShare.accessRetArray(i);
+              //     let [loc, top, isOwner] = PhotoShare.getPhotoInfo(photoHash);
+              //     var locArr = loc.split(',');
+              //     retArr[i][1] = top;
+              //     retArr[i][2] = locArr[0];
+              //     retArr[i][3] = locArr[1];
+              //     retArr[i][4] = isOwner;
+              //   }
+              //   return retArr;
+              // }
+
+
+
+              function generateTopicList() {
+                var numTopic = PhotoShare.countTopic();
+                console.log(numTopic);
+
+                var list = $("#topicListDiv");
+                var but;
+                
+                but =  '<li><div class="top-nav putMarkers" style="padding: 10px; padding-left: 15px; padding-right: 15px; color: WHITE;" name ="all" >ALL</div></li>'
+                list.append(but); 
+
+                for (var i=0;i<1;i++)
+                {
+                  var t = PhotoShare.getTopic(i);
+                  but =  '<li><div class="top-nav putMarkers" style="padding: 10px; padding-left: 15px; padding-right: 15px; color: WHITE;" name="'+"map"+'">'        +"map".toUpperCase()+'</div></li>'
+                  list.append(but);
+                }
+              }
+
+              // to display the pictures that are serached
+              function DisplayPicture(loc,topic)
+              {
+                var len = 0;
+                var isall = 0;
+                len = PhotoShare.getPhotosFromGeotag(loc);
+                var retArr = new Array(len);
+
+                for(var i=0;i<len;i++)
+                {
+                  retArr[i] = new Array(4);
+                  retArr[i][0] = PhotoShare.accessRetArray(i);
+                  let [loc, top, isOwner] = PhotoShare.getPhotoInfo(photoHash);
+                  retArr[i][1] = top;
+                  retArr[i][2] = loc;
+                  retArr[i][3] = isOwner;
+                }
+                // var a=0;
+                // var retArr = new Array(2);
+                
+                
+                //   retArr[0] = new Array(4);
+                //   retArr[0][0] = "QmNg2Ae2EZjfJi8ENFp8DH27KdmHaDjAWikB5PidiGyMig";
+                //   //let [loc, top, isOwner] = PhotoShare.getPhotoInfo(photoHash);
+                //   retArr[0][1] = "play";
+                //   retArr[0][2] = "dubai";
+                //   retArr[0][3] = "1";
+
+                //   retArr[1] = new Array(4);
+                //   retArr[1][0] = "QmZU7GVse1QbM2joe3qDYnooQzmf88L1HLFreBpozFdAbK";
+                //   //let [loc, top, isOwner] = PhotoShare.getPhotoInfo(photoHash);
+                //   retArr[1][1] = "play";
+                //   retArr[1][2] = "dubai";
+                //   retArr[1][3] = "1";
+                var a;
+                var place = document.getElementById("getPicture");
+                var table = document.createElement('table');
+                for(a=0; a<3;a++)   //retArr.length
+                {
+                  if(topic=="all"||topic==retArr[a][1]){
+                    var tr = document.createElement('tr');   
+                    var td1 = document.createElement('td');
+                    var td2 = document.createElement('td');
+                    var image = document.createElement("img");
+                    // var url = "https://ipfs.io/ipfs/"+retArr[a][0];
+                    var url ="https://static.pexels.com/photos/46710/pexels-photo-46710.jpeg";
+                    image.src = url;
+                    var info = document.createElement("p");
+                    var node = document.createTextNode("topic");  //retArr[a][1]
+                    info.append(node);
+                    var info2 = document.createElement("p");
+                    var node2 = document.createTextNode("loc"); //retArr[a][2]
+                    info2.append(node2);
+                    td1.appendChild(image);
+                    td2.appendChild(info);
+                    td2.appendChild(info2);
+                    tr.appendChild(td1);
+                    tr.appendChild(td2);
+                    table.appendChild(tr);
+                  }
+                }
+                place.appendChild(table);
+              }
+
+              $(document).ready(function () {
+                $("#myBtn").click(function(){
+                 $('#myModal').modal('show');
+               });
+              });
+
+              $(document).ready(function () {
+                $("#myData").click(function(){
+                 $('#myD').modal('show');
+               });
+              });
+
+              function UploadPicInfo(){
+                //input = document.getElementById('addPic');
+                //var input = $("#addPic");
+                var input = $("#testid input[type=file]");
+
+                var geotag_= document.getElementById('addPicLoc').value;
+                var topic = document.getElementById('addPicTopic').value;
+                console.log(input);
+                console.log(geotag_);
+                var str = "";
+                EmbarkJS.Storage.uploadFile(input).then(function(hash) {
+                  str = hash;
+                  console.log(str);
+                  var topic_ =  topic.toLowerCase();
+                  console.log(topic);
+                PhotoShare.addPhoto(str, geotag_, topic_); // should be str
+                console.log("Check successful");
+                clearVal();
+              });
+              }
+              
+              function clearVal(){
+                console.log("cleannn!");
+                $('#addPic').val('');
+                $("#addPicLoc").val('');
+                $("#addPicTopic").val('');
+              }
+            </script>
+
+          </body>
+          </html>
